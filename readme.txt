@@ -6,11 +6,13 @@ Requires at least: 2.0.2
 Tested up to: 2.9.1
 Stable tag: 1.0
 
-Lets you find and replace pages, posts and trashed items with a GUI.
+Lets you find and replace text in pages, posts and trashed items with a GUI.
+
 
 == Description ==
 
-Lets you find and replace pages, posts and trashed items with a GUI.
+Lets you find and replace text in pages, posts and trashed items with a GUI.
+
 
 == Installation ==
 
