@@ -8,7 +8,6 @@ Stable tag: 1.0
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
 
-
 == Description ==
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
@@ -32,4 +31,6 @@ First release
 
 == Screenshots ==
 
-None available yet
+1. Default view
+2. Enter a search and replace
+3. After submit
