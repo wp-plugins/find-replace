@@ -31,4 +31,6 @@ First release
 
 == Screenshots ==
 
-None available yet
+1. Default view
+2. Enter a search and replace
+3. After submit
