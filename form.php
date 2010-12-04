@@ -37,31 +37,66 @@ if (isset($_POST['submitbutton']) && isset($_POST['postorpage'])){
 		switch ($_POST['postorpage'])
 		{
 			case 'post':
-				$query = "WHERE post_type = 'post'";
+				$query = "WHERE p.post_type = 'post'";
 				break;
 			case 'page':
-				$query = "WHERE post_type = 'page'";
+				$query = "WHERE p.post_type = 'page'";
 				break;
 			case 'trash':
-				$query = "WHERE post_type = 'trash'";
+				$query = "WHERE p.post_type = 'trash'";
 				break;
 			default:
-				$query = "WHERE post_type = 'page' OR post_type = 'post' or post_type = 'trash'";
+				$query = "WHERE p.post_type = 'page' OR p.post_type = 'post' OR p.post_type = 'trash'";
 				break;												
 		}
 
 		$field = 'post_content';
 		$search = $_POST['search'];
 		$replace = $_POST['replace'];
-		$updatequery = "UPDATE LOW_PRIORITY $wpdb->posts SET post_content = REPLACE($field, '".mysql_real_escape_string($search)."', '".mysql_real_escape_string($replace)."') $query";
-		$wpdb->query($updatequery);
-		echo '<div id="message" class="updated fade">All instances of \'' . $search . '\' will be replaced with \''. $replace .'\' when server resources are available.</div>';
+$prio = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
+
+
+$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$field." = REPLACE(p.".$field.", '%s', '%s') $query", 
+       $search, $replace );
+
+			$wpdb->query($updatequery);
+
+		if(isset($_POST['postmeta']) && $_POST['postmeta'] == 'yes')
+		{
+			$field = 'meta_value';
+		
+			$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm, $wpdb->posts AS p SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $query AND pm.post_id = p.ID", 
+       $search, $replace );
+
+			$wpdb->query($updatequery);
+		}
+
+		if(empty($prio))
+		{		
+			echo '<div id="message" class="updated fade">All instances of \'' . $search . '\' are replaced with \''. $replace .'\'.</div>';
+		}
+		else
+		{
+			echo '<div id="message" class="updated fade">All instances of \'' . $search . '\' will be replaced with \''. $replace .'\' when server resources are available.</div>';
+		}
 	}
 }
 ?>
 <form id="form1" name="form1" method="post" action=""
 	onsubmit="return confirm('Are you sure?')">
 <table>
+	<tr>
+		<td>Include postmeta values:</td>
+		<td><input type="radio" name="postmeta" value="yes" checked="checked" /> Yes (Recommended)<br/>
+<input type="radio" name="postmeta" value="no" /> No
+</td>
+	</tr>
+	<tr>
+		<td>Use <a href="http://dev.mysql.com/doc/refman/5.0/en/update.html" target="_blank">LOW_PRIORITY</a> to do the update:</td>
+		<td><input type="radio" name="low_priority" value="no" checked="checked" /> No (Instant updates to your database)<br/>
+<input type="radio" name="low_priority" value="yes" /> Yes (Delayed updates, when the server has resources. Could take a long time!)
+</td>
+	</tr>
 	<tr>
 		<td>Search string:</td>
 		<td><input type="text" name="search" size="60" /></td>

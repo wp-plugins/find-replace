@@ -3,15 +3,16 @@ Contributors: Bas Bosman, Ramon Fincken
 Donate link: http://donate.ramonfincken.com
 Tags: rename,change,post,page,text,content,context,update,replace,change,server,url
 Requires at least: 2.0.2
-Tested up to: 3.0.1
-Stable tag: 1.0
+Tested up to: 3.0.2
+Stable tag: 1.1
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
+Optional: postmeta and low_priority updates
 
 == Description ==
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
-
+Optional: postmeta and low_priority updates
 
 == Installation ==
 
@@ -28,6 +29,11 @@ None available
 
 = 1.0 =
 First release
+
+= 1.1 =
+Added: LOW_PRIORITY yes/no
+Added: postmeta
+Added: MijnPress framework: http://www.mijnpress.nl/blog/plugin-framework/
 
 == Screenshots ==
 
