@@ -214,4 +214,4 @@ foreach($all_plugins as $plugin)
 <?php    
 } // end if(is_array($all_plugins) && count($all_plugins) > 0)
 } // end mijnpress_plugin_framework_showcredits($plugin_title,$all_plugins)
-?> 
+?>
