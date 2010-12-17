@@ -4,7 +4,7 @@ Donate link: http://donate.ramonfincken.com
 Tags: rename,change,post,page,text,content,context,update,replace,change,server,url
 Requires at least: 2.0.2
 Tested up to: 3.0.2
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
 Optional: postmeta and low_priority updates
