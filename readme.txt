@@ -3,8 +3,8 @@ Contributors: Bas Bosman, Ramon Fincken
 Donate link: http://donate.ramonfincken.com
 Tags: rename,change,post,page,text,content,context,update,replace,change,server,url
 Requires at least: 2.0.2
-Tested up to: 3.0.2
-Stable tag: 1.1.1
+Tested up to: 3.1.3
+Stable tag: 1.5
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
 Optional: postmeta and low_priority updates
@@ -22,10 +22,15 @@ Optional: postmeta and low_priority updates
 
 == Frequently Asked Questions ==
 
-None available
+= I have a lot of questions and I want support where can I go? =
+
+<a href="http://pluginsupport.mijnpress.nl/">http://pluginsupport.mijnpress.nl/</a> or drop me a tweet to notify me of your support topic over here.<br>
+I always check my tweets, so mention my name with @ramonfincken and your problem.
 
 
 == Changelog ==
+= 1.5 =
+Bugfix: Framework did not work on multisite, is_admin() problem.<br>If anyone could help me with that ? :)
 
 = 1.0 =
 First release
