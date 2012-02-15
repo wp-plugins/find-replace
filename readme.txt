@@ -1,10 +1,10 @@
 === Find replace ===
 Contributors: Bas Bosman, Ramon Fincken
 Donate link: http://donate.ramonfincken.com
-Tags: rename,change,post,page,text,content,context,update,replace,change,server,url
+Tags: rename,change,post,page,text,content,context,update,replace,change,server,url,cpt
 Requires at least: 2.0.2
-Tested up to: 3.1.3
-Stable tag: 1.5
+Tested up to: 3.3.1
+Stable tag: 1.6
 
 Lets you find and replace text in pages, posts and trashed items with a GUI.
 Optional: postmeta and low_priority updates
@@ -29,6 +29,9 @@ I always check my tweets, so mention my name with @ramonfincken and your problem
 
 
 == Changelog ==
+= 1.6 =
+Added: Custom Post Type support (CPT) 
+
 = 1.5 =
 Bugfix: Framework did not work on multisite, is_admin() problem.<br>If anyone could help me with that ? :)
 

@@ -4,11 +4,10 @@
  *
  * Managing the worpress additonal admin renamer extended operations.
  *
- * @category      Wordpress Plugins
+ * @category      WordPress Plugins
  * @package    	  Plugins
- * @author        Bas Bosman <>
- * @copyright     Yes, Open source, WebsiteFreelancers.nl
- * @version       v 1.0  05-01-2010 Bas$
+ * @author        Bas Bosman, MijnPress DE
+ * @copyright     Yes, Open source, MijnPress.nl
  */
 if (!defined('ABSPATH')) die("Aren't you supposed to come here via WP-Admin?");
 global $wpdb, $current_user;
@@ -19,7 +18,7 @@ $showMsg = 'none';
 /**
  * If submiting the form
  */
-if (isset($_POST['submitbutton']) && isset($_POST['postorpage'])){
+if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 	if (!isset($_POST['search']) || !$_POST['search']) {
 		echo '<div id="message" class="error">No search string</div>';
 	}
@@ -33,40 +32,28 @@ if (isset($_POST['submitbutton']) && isset($_POST['postorpage'])){
 		}
 
 		//logic
-		$query = "";
-		switch ($_POST['postorpage'])
-		{
-			case 'post':
-				$query = "WHERE p.post_type = 'post'";
-				break;
-			case 'page':
-				$query = "WHERE p.post_type = 'page'";
-				break;
-			case 'trash':
-				$query = "WHERE p.post_type = 'trash'";
-				break;
-			default:
-				$query = "WHERE p.post_type = 'page' OR p.post_type = 'post' OR p.post_type = 'trash'";
-				break;												
-		}
-
-		$field = 'post_content';
-		$search = $_POST['search'];
-		$replace = $_POST['replace'];
-$prio = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
+		$query          = "";
+		foreach ($_POST['post_type'] as $type) {
+         $query         = $query == '' ? 'WHERE p.post_type IN(' : $query . ', ';
+         $query         .= "'" . $type . "'";
+      }
+      $query         .= ")";
+      
+		$field          = 'post_content';
+		$search         = $_POST['search'];
+		$replace        = $_POST['replace'];
+      $prio           = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
 
 
-$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$field." = REPLACE(p.".$field.", '%s', '%s') $query", 
-       $search, $replace );
+      $updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$field." = REPLACE(p.".$field.", '%s', '%s') $query", $search, $replace );
 
-			$wpdb->query($updatequery);
+      $wpdb->query($updatequery);
 
 		if(isset($_POST['postmeta']) && $_POST['postmeta'] == 'yes')
 		{
 			$field = 'meta_value';
 		
-			$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm, $wpdb->posts AS p SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $query AND pm.post_id = p.ID", 
-       $search, $replace );
+			$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm, $wpdb->posts AS p SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $query AND pm.post_id = p.ID", $search, $replace );
 
 			$wpdb->query($updatequery);
 		}
@@ -106,17 +93,19 @@ $updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$fiel
 		<td><input type="text" name="replace" size="60" /></td>
 	</tr>
 	<tr>
-		<td>Post or page:</td>
-		<td><select name="postorpage">
-			<option value="post">Post</option>
-			<option value="page">Page</option>
-			<option value="page">Trash</option>
-			<option value="postpage">Post, Page & Trash</option>
-		</select></td>
-	
-	
+		<td valign="top">Post types:</td>
+		<td>
+         <?php
+         //get all
+		   $post_types           = get_post_types(array('public' => true), 'object');
+		   unset($post_types['attachment']);
+		   foreach ($post_types as $type => $info) {
+            echo '<label><input type="checkbox" name="post_type[]" value="' . $type . '"> ' . $info->labels->singular_name . '</label><br>';
+		   }
+         ?>
+         <label><input type="checkbox" name="post_type[]" value="trash"> Trash</label>
+      </td>
 	<tr>
-
 </table>
 <input type="submit" name="submitbutton" value="Search and replace"
 	style="margin-top: 2px;"></form>
