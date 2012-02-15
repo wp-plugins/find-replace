@@ -132,7 +132,7 @@ class mijnpress_plugin_framework
     {
         if($this->showcredits)
         {
-        	echo '<br/><br/>Do you like this plugin? <a href="http://donate.ramonfincken.com/">PayPal Donations</a> (even as small as $1,- or &euro;1,- are welcome!.';
+        	echo '<br/><br/>Do you like this plugin? <a href="http://donate.ramonfincken.com/">PayPal Donations</a> (even as small as $1,- or &euro;1,)- are welcome!.';
         }
         echo '</div>';
         echo '<div style="width:20%; float: right; margin-right: 10px;">';
