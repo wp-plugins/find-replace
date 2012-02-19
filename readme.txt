@@ -6,12 +6,12 @@ Requires at least: 2.0.2
 Tested up to: 3.3.1
 Stable tag: 1.6
 
-Lets you find and replace text in pages, posts and trashed items with a GUI.
+Lets you find and replace text in pages, posts, Custom Post types and trashed items with a GUI.
 Optional: postmeta and low_priority updates
 
 == Description ==
 
-Lets you find and replace text in pages, posts and trashed items with a GUI.
+Lets you find and replace text in pages, posts, Custom Post types and trashed items with a GUI.
 Optional: postmeta and low_priority updates
 
 == Installation ==
