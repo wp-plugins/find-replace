@@ -13,6 +13,8 @@ Optional: postmeta and low_priority updates
 
 Lets you find and replace text in pages, posts, Custom Post types and trashed items with a GUI.
 Optional: postmeta and low_priority updates
+<br>
+<br>Coding by: <a href="http://www.mijnpress.nl">MijnPress.nl</a> <a href="http://twitter.com/#!/ramonfincken">Twitter profile</a> <a href="http://wordpress.org/extend/plugins/profile/ramon-fincken">More plugins</a>
 
 == Installation ==
 
