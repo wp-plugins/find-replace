@@ -24,15 +24,22 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 	}
 	else if (!isset($_POST['replace']) || !$_POST['replace']){
 		echo '<div id="message" class="error">No replace string</div>';
-	}else{
+	}
+	elseif (!isset($_POST['posttype']) || !count($_POST['posttype'])){
+		echo '<div id="message" class="error">No post type selected</div>';
+	} else {
+
 		//Is magic quotes on?
 		if (get_magic_quotes_gpc()) {
+			$posttype_org = $_POST['posttype'];
 			// Yes? Strip the added slashes
 			$_POST = array_map('stripslashes', $_POST);
+			$_POST['posttype'] = $posttype_org;
 		}
 
 		//logic
 		$query          = "";
+		
 		foreach ($_POST['post_type'] as $type) {
          $query         = $query == '' ? 'WHERE p.post_type IN(' : $query . ', ';
          $query         .= "'" . $type . "'";
@@ -42,7 +49,7 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		$field          = 'post_content';
 		$search         = $_POST['search'];
 		$replace        = $_POST['replace'];
-      $prio           = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
+      	$prio           = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
 
 
       $updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$field." = REPLACE(p.".$field.", '%s', '%s') $query", $search, $replace );
@@ -111,9 +118,10 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 	style="margin-top: 2px;"></form>
 
 <h3>How to use?</h3>
-<p class="updated">* Search & replace works case sensitive!<br />
+<p class="updated">* Search &amp; replace works case sensitive!<br />
 &nbsp;&nbsp;&nbsp;A search for "MySearch" will not find content with
 "mysearch".<br />
+* Warning, Search &amp; replace postmeta will replace all postmeta, regardless of post type!<br />
 * Only the current version of your page or post will be updated.<br />
 * Example when you moved domains and you want to replace all links in
 your content:<br />
