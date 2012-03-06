@@ -3,7 +3,7 @@
 Plugin Name: Find and replace
 Plugin URI: http://www.websitefreelancers.nl
 Description: Lets you find and replace pages and posts with a GUI.
-Version: 1.7
+Version: 1.8
 Author: Ramon Fincken, Bas Bosman
 Author URI: http://www.websitefreelancers.nl
 */
