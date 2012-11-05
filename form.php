@@ -47,6 +47,10 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		$replace        = $_POST['replace'];
 		$prio           = ($_POST['low_priority'] == 'yes') ? ' LOW_PRIORITY ' : '';
 
+		$tmpquery = str_replace('WHERE','AND',$query);
+		$wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE .$field LIKE('%s') AND $tmpquery", $search );
+		$found =  intval($wpdb->num_rows);
+		
 		$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->posts AS p SET p.".$field." = REPLACE(p.".$field.", '%s', '%s') $query", $search, $replace );
 
 		$wpdb->query($updatequery);
@@ -55,10 +59,19 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		{
 			$field = 'meta_value';
 
-			$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm, $wpdb->posts AS p SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $query AND pm.post_id = p.ID", $search, $replace );
-			$wpdb->query($updatequery);
+			$rows_query = $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE .$field LIKE('%s') AND $tmpquery", $search );
+			
+			$rows = $wpdb->get_results($rows_query);
+			$found +=  intval($wpdb->num_rows);
+			foreach ($users AS $row) {
+				
+			}
+			
+			//$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $tmpquery", $search, $replace );
+			//$wpdb->query($updatequery);
 		}
 
+		
 		if(empty($prio))
 		{
 			echo '<div id="message" class="updated fade">All instances of \'' . $search . '\' are replaced with \''. $replace .'\'.</div>';
@@ -66,6 +79,10 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		else
 		{
 			echo '<div id="message" class="updated fade">All instances of \'' . $search . '\' will be replaced with \''. $replace .'\' when server resources are available.</div>';
+		}
+		if($found)
+		{
+			echo '<div id="message" class="updated fade">Rows found: ' . $found . '</div>';
 		}
 	}
 }

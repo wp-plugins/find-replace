@@ -3,8 +3,8 @@ Contributors: Bas Bosman, Ramon Fincken
 Donate link: http://donate.ramonfincken.com
 Tags: rename,change,post,page,text,content,context,update,replace,change,server,url,cpt
 Requires at least: 2.0.2
-Tested up to: 3.3.1
-Stable tag: 1.8
+Tested up to: 3.4.2
+Stable tag: 1.9
 
 Lets you find and replace text in pages, posts, Custom Post types and trashed items with a GUI.
 Optional: postmeta and low_priority updates
@@ -32,6 +32,10 @@ I always check my tweets, so mention my name with @ramonfincken and your problem
 
 
 == Changelog ==
+= 1.9 =
+Added: Shows rows found and replaced
+xx
+
 = 1.8 =
 Bugfix: No post type selected error even though i am selecting pages<br>
 pluginsupport.mijnpress.nl/2012/03/06/keep-getting-the-no-post-type-selected-error-even-though-i-am-selecting-pages/<br>
