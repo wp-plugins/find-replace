@@ -3,7 +3,7 @@ Contributors: Bas Bosman, Ramon Fincken
 Donate link: http://donate.ramonfincken.com
 Tags: rename,change,post,page,text,content,context,update,replace,change,server,url,cpt
 Requires at least: 2.0.2
-Tested up to: 3.4.2
+Tested up to: 3.8.1
 Stable tag: 1.8
 
 Lets you find and replace text in pages, posts, Custom Post types and trashed items with a GUI.
