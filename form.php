@@ -12,18 +12,71 @@ global $wpdb;
 $message = null;
 $showMsg = 'none';
 
+
+	/**
+	* Function code 95% from WPEX Replace DB Urls https://plugins.trac.wordpress.org/browser/wpex-replace/trunk/replacestring.class.php
+	*/
+	function replaceValue($value, $replaceList)
+	{
+		if (is_array($value))
+		{
+			$a = array();
+			foreach ($value as $k=>$v)
+			{
+				$a[$k] = replaceValue($v, $replaceList);
+			}
+			return $a;
+		}
+		if (is_object($value))
+		{
+			$o = new stdClass();
+			foreach ($value as $k=>$v)
+			{
+				$o->$k = replaceValue($v, $replaceList);
+			}
+			return $o;
+		}    
+		if (strncasecmp($value, 'a:', 2) == 0)
+		{
+			$a = maybe_unserialize($value);
+			if($a === false) { return $value; }
+			foreach ($a as $k=>$v)
+			{
+				$a[$k] = replaceValue($v, $replaceList);
+			}
+			return maybe_serialize($a);
+		}
+		if (strncasecmp($value, 'o:', 2) == 0)
+		{
+			$o = maybe_unserialize($value);
+			if($o === false) { return $value; }
+			foreach ($o as $k=>$v)
+			{
+				$o->$k = replaceValue($v, $replaceList);
+			}
+			return maybe_serialize($o);
+		}
+	
+		$oldValue = $value;
+		$newValue = str_replace(array_keys($replaceList), array_values($replaceList), $value);
+		
+		if (strcasecmp($oldValue, $newValue) == 0)
+			return $value;
+		
+		return $newValue;
+	}
+	
+
 /**
  * If submiting the form
  */
 if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
+
 	if (!isset($_POST['search']) || !$_POST['search']) {
 		echo '<div id="message" class="error">No search string</div>';
 	}
 	else if (!isset($_POST['replace']) || !$_POST['replace']){
 		echo '<div id="message" class="error">No replace string</div>';
-	}
-	elseif (!isset($_POST['post_type']) || !count($_POST['post_type'])){
-		echo '<div id="message" class="error">No post type selected</div>';
 	} else {
 		//Is magic quotes on?
 		// http://codex.wordpress.org/Function_Reference/stripslashes_deep
@@ -34,6 +87,8 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		//logic
 		$query	= "";
 		$subquery = "";
+
+		$foundMeta = $foundOptions = $found = 0;
 
 		// at least 1 post_type is there, so the opening ( will match the ) below this foreach
 		foreach ($_POST['post_type'] as $type) {
@@ -59,16 +114,46 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		{
 			$field = 'meta_value';
 
-			$rows_query = $wpdb->prepare( "SELECT meta_id FROM $wpdb->postmeta WHERE .$field LIKE('%s') AND $tmpquery", $search );
-			
+			$aFindreplace = array($search => $replace);
+			$searchlike = $wpdb->esc_like($search);
+			$searchlike = '%' . $searchlike . '%';
+			$rows_query = $wpdb->prepare( "SELECT meta_id, $field FROM $wpdb->postmeta WHERE $field LIKE('%s')", $searchlike );
 			$rows = $wpdb->get_results($rows_query);
-			$found +=  intval($wpdb->num_rows);
-			foreach ($users AS $row) {
-				
+
+			$foundMeta = intval($wpdb->num_rows);
+			$found += $foundMeta;
+
+			foreach ($rows AS $oMetaRow) {
+				$sNewVal = replaceValue($oMetaRow->meta_value, $aFindreplace);
+				$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm SET pm.$field = '%s' WHERE meta_id = %d", $sNewVal, $oMetaRow->meta_id );
+
+				$wpdb->query($updatequery);
 			}
+		}
+
+
+		if(isset($_POST['options']) && $_POST['options'] == 'yes')
+		{
+			$field = 'option_value';
+			$aFindreplace = array($search => $replace);
+			$searchlike = $wpdb->esc_like($search);
+
+			$searchlike = '%' . $searchlike . '%';
+
+			$rows_query = $wpdb->prepare( "SELECT option_id, $field FROM $wpdb->options WHERE $field LIKE('%s')", $searchlike );
+
+			$rows = $wpdb->get_results($rows_query."  AND option_name LIKE ('widget_%')");
+
+
+			$foundOptions = intval($wpdb->num_rows);
+			$found += $foundOptions;
 			
-			//$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->postmeta AS pm SET pm.".$field." = REPLACE(pm.".$field.", '%s', '%s') $tmpquery", $search, $replace );
-			//$wpdb->query($updatequery);
+			foreach ($rows AS $oOptionsRow) {
+				$sNewVal = replaceValue($oOptionsRow->option_value, $aFindreplace);
+				$updatequery = $wpdb->prepare( "UPDATE ".$prio." $wpdb->options AS opt SET opt.$field = '%s' WHERE option_id = %d", $sNewVal, $oOptionsRow->option_id );
+
+				$wpdb->query($updatequery);
+			}
 		}
 
 		
@@ -82,22 +167,28 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 		}
 		if($found)
 		{
-			echo '<div id="message" class="updated fade">Rows found: ' . $found . '</div>';
+			echo '<div id="message" class="updated fade">Rows found: ' . $found . ' (including '.$foundMeta.' meta, '.$foundOptions .' options)</div>';
 		}
 	}
 }
 ?>
 <h1>Find &amp; Replace plugin</h1>
-<p>A simple tool.</p>
+<p>A simple tool. Make a backup first!</p>
 
 <form id="form1" name="form1" method="post" action=""
 	onsubmit="return confirm('Are you sure? There is NO undo.')">
 <table>
 	<tr>
-		<td>Include postmeta values:</td>
-		<td><input type="radio" name="postmeta" value="yes" checked="checked" />
+		<td>Include postmeta values: (For all post types!)</td>
+		<td><input type="radio" name="postmeta" value="yes" />
+		Yes<br />
+		<input type="radio" name="postmeta" value="no" checked="checked"/> No</td>
+	</tr>
+	<tr>
+		<td>Include widgets:</td>
+		<td><input type="radio" name="options" value="yes" checked="checked" />
 		Yes (Recommended)<br />
-		<input type="radio" name="postmeta" value="no" /> No</td>
+		<input type="radio" name="options" value="no" /> No</td>
 	</tr>
 	<tr>
 		<td>Use <a href="http://dev.mysql.com/doc/refman/5.0/en/update.html"
@@ -125,7 +216,8 @@ if (isset($_POST['submitbutton']) && isset($_POST['post_type'])){
 			echo '<label><input type="checkbox" name="post_type[]" value="' . $type . '"> ' . $info->labels->singular_name . '</label><br>';
 		}
 		?> <label><input type="checkbox" name="post_type[]" value="trash">
-		Trash</label></td>
+		Trash</label>
+		<input type="hidden" name="post_type[]" value="invalidnotexisting"></td>
 	</tr>
 </table>
 <input type="submit" name="submitbutton" value="Search and replace"
